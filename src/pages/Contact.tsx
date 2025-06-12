@@ -13,31 +13,15 @@ const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // تعديلات على handleSubmit:
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    try {
-      const form = e.target as HTMLFormElement;
-      const formDataObj = new FormData(form);
-      
-      const response = await fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(formDataObj as any).toString()
-      });
 
-      if (response.ok) {
-        setSubmitStatus('success');
-        setFormData({ name: '', email: '', phone: '', service: '', message: '' });
-      } else {
-        setSubmitStatus('error');
-      }
-    } catch (error) {
-      setSubmitStatus('error');
-    } finally {
-      setIsSubmitting(false);
-    }
+    // Netlify Form Submission will handle the data automatically
+    setSubmitStatus('success');
+    setFormData({ name: '', email: '', phone: '', service: '', message: '' });
+    setIsSubmitting(false);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -134,13 +118,16 @@ const Contact = () => {
               )}
 
               <form 
+                onSubmit={handleSubmit} 
+                className="space-y-6"
                 name="contact"
                 method="POST"
                 data-netlify="true"
-		onSubmit={handleSubmit}
-                className="space-y-6"
+                data-netlify-honeypot="bot-field"
               >
+                {/* Hidden fields for Netlify */}
                 <input type="hidden" name="form-name" value="contact" />
+                <input type="hidden" name="bot-field" />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
@@ -161,7 +148,6 @@ const Contact = () => {
                       />
                     </div>
                   </div>
-
                   <div>
                     <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
                       رقم الهاتف *
